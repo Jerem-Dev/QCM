@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  username    String   @unique
+  password    String
+  score     Int @default(0)
+
+  qcms     QCM[]
+  progression Progression[]
+
+}
+
+model QCM {
+  id        Int   @id @default(autoincrement())
+  title     String
+  userId Int
+
+  questions Question[]
+  progression Progression?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Question {
+  id        Int   @id @default(autoincrement())
+  title     String
+  completed Boolean
+  explanation String
+  qcmId Int
+
+  options   Option[]
+
+  qcm QCM @relation(fields: [qcmId], references: [id])
+}
+
+model Option {
+  id        Int   @id @default(autoincrement())
+  text_option     String
+  isCorrect Boolean @default(false)
+  selected Boolean @default(false)
+  questionId Int
+
+  question Question @relation(fields: [questionId], references: [id])
+}
+
+model Progression{
+  id        Int   @id @default(autoincrement())
+  score     Int @default(0)
+  progress     Int @default(0)
+  userId Int
+  qcmId Int @unique
+
+  qcm QCM @relation(fields: [qcmId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, qcmId])
+
+}
