@@ -1,14 +1,14 @@
 const express = require("express");
-const { PrismaClient } = require("@prisma/client");
 const cors = require("cors");
 
-const prisma = new PrismaClient();
+const userRouter = require("./routes/user");
+const authRouter = require("./routes/auth");
+
 const app = express();
 app.use(cors());
+app.use(express.json());
 
-app.get("/users", async (req, res) => {
-  const users = await prisma.user.findMany();
-  res.json(users);
-});
+app.use("/api/users", userRouter);
+app.use("/api/auth", authRouter);
 
 module.exports = app;
