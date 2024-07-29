@@ -1,73 +1,31 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import "./App.css";
-import LoginForm from "./components/LoginForm";
-
-interface User {
-  id: number;
-  username: string;
-}
+import { useDispatch } from "react-redux";
+import { restoreState } from "./features/auth/authSlice";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from "./components/Header/Header";
+import Home from "./pages/home/Home";
+import Signup from "./pages/Signup/Signup";
+import CreateQcm from "./pages/CreateQcm/CreateQcm";
 
 export default function App() {
-  const [users, setUsers] = useState<User[]>([]);
-
-  const handleFetchUsers = async () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const response = await fetch("http://localhost:3000/api/users", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await response.json();
-        setUsers(data);
-        console.log(data);
-      } catch (error) {
-        console.error(error);
-      }
-    } else {
-      console.log("No token");
-    }
-  };
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log("users", users);
-  }, [users]);
-
-  const handleCreateUser = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: "John Doe hashed",
-          password: "password",
-        }),
-      });
-      const data = await response.json();
-      console.log(data);
-    } catch (error) {
-      console.error(error);
+    const storedState = localStorage.getItem("authState");
+    if (storedState) {
+      dispatch(restoreState(JSON.parse(storedState)));
     }
-  };
+  }, [dispatch]);
 
   return (
-    <div>
-      <h1>React App</h1>
-      <button onClick={handleFetchUsers}>fetch Users</button>
-      <button onClick={handleCreateUser}>Create User</button>
-      <LoginForm />
-      {users.length > 0 && (
-        <ul>
-          {users.map((user) => (
-            <li key={user.id}>
-              {user.id} - {user.username}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <Router>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/create-qcm" element={<CreateQcm />} />
+      </Routes>
+    </Router>
   );
 }

@@ -11,7 +11,7 @@ userRouter.get("/", checkToken, async (req, res) => {
   res.json(users);
 });
 
-userRouter.get("/:id", async (req, res) => {
+userRouter.get("/:id", checkToken, async (req, res) => {
   const { id } = req.params;
 
   const user = await prisma.user.findUnique({

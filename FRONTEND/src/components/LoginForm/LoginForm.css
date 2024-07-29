@@ -1,0 +1,10 @@
+.login-form {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  input {
+    border: none;
+    border-radius: 5px;
+    padding: 0.5em;
+  }
+}

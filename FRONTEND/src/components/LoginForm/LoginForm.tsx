@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { login } from "../../features/auth/authSlice";
+import "./LoginForm.css";
 
 const LoginForm = () => {
+  const dispatch = useDispatch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("No user");
-  const [isConnected, setIsConnected] = useState(false);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -19,39 +21,39 @@ const LoginForm = () => {
       });
 
       const data = await response.json();
-
-      if (response.ok) {
-        setMessage("Login successful!");
-        console.log(data);
-        localStorage.setItem("token", data.token);
-        setIsConnected(true);
-      } else {
-        setMessage(data.error);
-        console.error("Error:", data.error, data.status);
+      console.log(data);
+      if (data.token) {
+        const userResponse = await fetch(
+          `http://localhost:3000/api/users/${data.id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${data.token}`,
+            },
+          }
+        );
+        const userData = await userResponse.json();
+        if (userData) {
+          const user = {
+            id: userData.id,
+            username: userData.username,
+          };
+          console.log(userData);
+          const token = data.token;
+          dispatch(login({ token, user }));
+        }
       }
     } catch (error) {
       console.error("Error:", error);
-      setMessage("An error occurred.");
     }
   };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsConnected(false);
-  };
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setMessage("No user");
-    }
-  }, [isConnected]);
 
   return (
     <div>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>Username:</label>
+      <form className="login-form" onSubmit={handleLogin}>
+        <div className="field">
+          <label>Username : </label>
           <input
             type="text"
             value={username}
@@ -59,8 +61,8 @@ const LoginForm = () => {
             required
           />
         </div>
-        <div>
-          <label>Password:</label>
+        <div className="field">
+          <label>Password : </label>
           <input
             type="password"
             value={password}
@@ -70,8 +72,6 @@ const LoginForm = () => {
         </div>
         <button type="submit">Login</button>
       </form>
-      <button onClick={handleLogout}>Logout</button>
-      {message && <p>{message}</p>}
     </div>
   );
 };

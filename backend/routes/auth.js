@@ -16,7 +16,7 @@ authRouter.post("/register", async (req, res) => {
     },
   });
   if (userWithSameUsername) {
-    return res.status(400).json({ error: "User already exists" });
+    return res.status(400).json({ error: "Username already exists" });
   } else {
     const hash = await bcrypt.hash(password, 10);
 
@@ -50,9 +50,13 @@ authRouter.post("/login", async (req, res) => {
   res.status(200).json({
     id: user.id,
     username: user.username,
-    token: jwt.sign({ username: user.username }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    }),
+    token: jwt.sign(
+      { username: user.username, userId: user.id },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    ),
   });
 });
 
