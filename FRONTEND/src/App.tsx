@@ -7,6 +7,7 @@ import Header from "./components/Header/Header";
 import Home from "./pages/home/Home";
 import Signup from "./pages/Signup/Signup";
 import CreateQcm from "./pages/CreateQcm/CreateQcm";
+import AnswerQcm from "./pages/AnswerQcm/AnswerQcm";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/create-qcm" element={<CreateQcm />} />
+        <Route path="/qcm/:id" element={<AnswerQcm />} />
       </Routes>
     </Router>
   );

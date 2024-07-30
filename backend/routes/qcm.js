@@ -23,6 +23,24 @@ qcmRouter.get("/", checkToken, async (req, res) => {
   }
 });
 
+qcmRouter.get("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  const qcm = await prisma.qCM.findUnique({
+    where: {
+      id: parseInt(id),
+    },
+    include: {
+      questions: {
+        include: {
+          options: true,
+        },
+      },
+    },
+  });
+  res.json(qcm);
+});
+
 qcmRouter.post("/create-qcm", checkToken, async (req, res) => {
   try {
     const { title, questions } = req.body;

@@ -35,13 +35,14 @@ export default function QcmList() {
   const handleNavigateCreateQcm = () => {
     navigate("/create-qcm");
   };
+
   return (
     <div>
       <h2>QCM List</h2>
       <ul>
         {qcms.map((qcm: any) => (
           <li key={qcm.id}>
-            <a>{qcm.title}</a>
+            <a href={`/qcm/${qcm.id}`}>{qcm.title}</a>
           </li>
         ))}
       </ul>
