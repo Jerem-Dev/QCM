@@ -54,7 +54,7 @@ authRouter.post("/login", async (req, res) => {
       { username: user.username, userId: user.id },
       process.env.JWT_SECRET,
       {
-        expiresIn: "1h",
+        expiresIn: "12h",
       }
     ),
   });

@@ -86,4 +86,41 @@ qcmRouter.post("/create-qcm", checkToken, async (req, res) => {
   }
 });
 
+qcmRouter.get("/user-progress/:qcmId", checkToken, async (req, res) => {
+  try {
+    const { qcmId } = req.params;
+    const userId = req.user.userId;
+
+    const userAnswers = await prisma.user_answer.findMany({
+      where: {
+        userId: userId,
+        option: {
+          question: {
+            qcmId: parseInt(qcmId),
+          },
+        },
+      },
+      include: {
+        option: true,
+      },
+    });
+
+    if (userAnswers.length === 0) {
+      return res.json({ currentQuestionIndex: 0 });
+    }
+
+    const answeredQuestionIds = userAnswers.map(
+      (answer) => answer.option.questionId
+    );
+    const nextQuestionIndex = answeredQuestionIds.length;
+
+    res.json({ currentQuestionIndex: nextQuestionIndex });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching user progress" });
+  }
+});
+
 module.exports = qcmRouter;

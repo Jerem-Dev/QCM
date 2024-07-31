@@ -12,6 +12,7 @@ export default function Header() {
 
   const handleLogout = () => {
     dispatch(logout());
+    navigate("/");
   };
 
   const handleNavigateSignup = () => {
